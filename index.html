@@ -166,18 +166,50 @@ nav { flex: 1; padding: 8px 0 24px; }
   font-family: 'IBM Plex Mono', monospace;
 }
 .topbar-actions { display: flex; gap: 12px; align-items: center; }
-#theme-toggle {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 6px 14px;
-  border-radius: 6px;
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  font-size: 0.8rem;
-  font-family: 'DM Sans', sans-serif;
-  transition: all 0.2s;
 }
-#theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-switch-wrapper input {
+  display: none;
+}
+.theme-switch-wrapper .slider {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background-color: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 34px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+}
+.theme-switch-wrapper .slider:hover {
+  border-color: var(--accent);
+}
+.theme-switch-wrapper .slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text);
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  z-index: 2;
+}
+.theme-switch-wrapper input:checked + .slider::before {
+  transform: translateX(24px);
+}
+.theme-switch-wrapper .icon {
+  font-size: 11px;
+  z-index: 1;
+  user-select: none;
+}
 #menu-toggle {
   display: none;
   background: none;
@@ -723,4 +755,1985 @@ li { margin-bottom: 6px; font-size: 0.9rem; }
 }
 .tag-java { background: rgba(240,165,0,0.1); color: var(--accent); }
 .tag-spring { background: rgba(62,207,142,0.1); color: var(--accent2); }
-.tag-pattern { background: rgba(91,141,238,0.1); color: va
+.tag-pattern { background: rgba(91,141,238,0.1); color: var(--accent3); }
+
+#sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+}
+#sidebar-overlay.show { display: block; }
+</style>
+</head>
+<body>
+
+<div id="reading-progress"></div>
+<div id="sidebar-overlay"></div>
+
+<!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Code Refactoring</div>
+    <div class="sidebar-sub">Engineering Handbook</div>
+  </div>
+  <div id="search-box">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search-input" placeholder="Search topics...">
+  </div>
+  <nav id="sidebar-nav">
+    <div class="nav-group">
+      <div class="nav-group-title">Getting Started</div>
+      <a href="#hero" class="nav-link active"><span class="nav-num">00</span>Overview</a>
+      <a href="#ch1" class="nav-link"><span class="nav-num">01</span>Introduction</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Foundations</div>
+      <a href="#ch2" class="nav-link"><span class="nav-num">02</span>Core Principles</a>
+      <a href="#ch3" class="nav-link"><span class="nav-num">03</span>Code Smells</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Techniques</div>
+      <a href="#ch4" class="nav-link"><span class="nav-num">04</span>Refactoring Patterns (LLD)</a>
+      <a href="#ch5" class="nav-link"><span class="nav-num">05</span>Architectural Refactoring (HLD)</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Production</div>
+      <a href="#ch6" class="nav-link"><span class="nav-num">06</span>Spring Boot Refactoring</a>
+      <a href="#ch7" class="nav-link"><span class="nav-num">07</span>Testing Strategies</a>
+      <a href="#ch8" class="nav-link"><span class="nav-num">08</span>Performance & Observability</a>
+      <a href="#ch9" class="nav-link"><span class="nav-num">09</span>Production Strategy</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Reference</div>
+      <a href="#ch10" class="nav-link"><span class="nav-num">10</span>Tools & Automation</a>
+      <a href="#checklist" class="nav-link"><span class="nav-num">✓</span>Refactoring Checklist</a>
+      <a href="#casestudy" class="nav-link"><span class="nav-num">★</span>Case Study</a>
+      <a href="#interview" class="nav-link"><span class="nav-num">?</span>Interview Questions</a>
+    </div>
+  </nav>
+</aside>
+
+<!-- ═══════════════════════════════ MAIN ═══════════════════════════════ -->
+<div id="main">
+  <div id="topbar">
+    <div class="topbar-breadcrumb">Engineering Handbook / Code Refactoring</div>
+    <div class="topbar-actions">
+      <label class="theme-switch-wrapper" for="theme-toggle" aria-label="Toggle Theme">
+        <input type="checkbox" id="theme-toggle" />
+        <div class="slider round">
+          <span class="icon">🌙</span>
+          <span class="icon">☀</span>
+        </div>
+      </label>
+      <button id="menu-toggle">☰</button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-eyebrow">Staff Engineer's Handbook</div>
+    <h1 class="hero-title">The Art of<br><em>Code Refactoring</em></h1>
+    <p class="hero-desc">A production-grade guide to transforming brittle, tangled codebases into clean, maintainable, and scalable systems — from method-level cleanup to full architectural migrations.</p>
+    <div class="hero-chips">
+      <span class="chip accent">Java + Spring Boot</span>
+      <span class="chip green">10 Chapters</span>
+      <span class="chip blue">LLD + HLD</span>
+      <span class="chip">SOLID Principles</span>
+      <span class="chip">Design Patterns</span>
+      <span class="chip">Production Safety</span>
+    </div>
+  </section>
+
+  <content-wrap>
+
+  <!-- ════════════════════════════ CHAPTER 1 ════════════════════════════ -->
+  <section class="chapter" id="ch1">
+    <div class="chapter-badge">📖 Chapter 01</div>
+    <h1 class="chapter-title">Introduction to Code Refactoring</h1>
+
+    <h2>What is Refactoring?</h2>
+    <p>Refactoring is the disciplined process of restructuring existing code — changing its internal structure without altering its external behavior. The term was popularized by <strong>Martin Fowler</strong> in his seminal book <em>Refactoring: Improving the Design of Existing Code</em> (1999), but the practice predates it by decades.</p>
+    <p>The key word is <strong>disciplined</strong>. Ad-hoc cleanup driven by intuition is not refactoring — it's hacking. True refactoring follows a systematic approach: identify a problem, apply a named technique, verify behavior is preserved, commit. Repeat.</p>
+
+    <div class="callout info">
+      <div class="callout-title">💡 Fowler's Definition</div>
+      Refactoring is a change made to the internal structure of software to make it easier to understand and cheaper to modify, without changing its observable behavior.
+    </div>
+
+    <h2>Why It Matters in Production Systems</h2>
+    <p>Technical debt compounds. A 2023 study by McKinsey estimated that engineering teams spend <strong>20–40% of their time</strong> managing technical debt. In large enterprise systems, that number climbs higher. The cost is not just developer time — it's:</p>
+    <ul>
+      <li><strong>Velocity loss:</strong> New features take 3x longer because every change touches fragile, tangled code.</li>
+      <li><strong>Bug rate:</strong> Poorly structured code correlates directly with defect density.</li>
+      <li><strong>Onboarding time:</strong> New engineers spend weeks understanding spaghetti code instead of shipping.</li>
+      <li><strong>Incident rate:</strong> Complex, tightly-coupled systems are harder to diagnose and fix under pressure.</li>
+    </ul>
+
+    <h2>Refactoring vs Rewriting</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Dimension</th><th>Refactoring</th><th>Rewriting</th></tr></thead>
+        <tbody>
+          <tr><td>Risk</td><td>Low — incremental, tested</td><td>Extremely high — "big bang"</td></tr>
+          <tr><td>Time</td><td>Weeks to months, parallel to features</td><td>Months to years, often blocks features</td></tr>
+          <tr><td>Knowledge preservation</td><td>High — business rules stay intact</td><td>Low — edge cases get lost</td></tr>
+          <tr><td>ROI</td><td>Positive early, compounds over time</td><td>Delayed, often fails to deliver</td></tr>
+          <tr><td>When to use</td><td>Messy but working code</td><td>Fundamental design flaw, wrong tech</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-title">⚠ The Rewrite Trap</div>
+      Joel Spolsky famously called rewriting from scratch "the single worst strategic mistake a software company can make." Netscape 6 rewrote the browser from scratch — it took 3 years, was riddled with bugs, and cost Netscape its market lead. Incremental refactoring almost always wins.
+    </div>
+
+    <h2>Real-World: Bad vs Good Code</h2>
+    <div class="ba-grid">
+      <div class="ba-panel ba-before">
+        <div class="ba-label">❌ Before — God Method (real pattern seen in legacy banking systems)</div>
+        <pre><code class="language-java">public String processOrder(Map&lt;String, Object&gt; data) {
+    // validate
+    if (data.get("userId") == null || data.get("items") == null) {
+        return "ERROR:INVALID";
+    }
+    // check inventory
+    List items = (List) data.get("items");
+    for (Object item : items) {
+        Map m = (Map) item;
+        int qty = (int) m.get("qty");
+        String sku = (String) m.get("sku");
+        // raw JDBC...
+        Connection conn = DriverManager.getConnection(DB_URL);
+        PreparedStatement ps = conn.prepareStatement(
+            "SELECT stock FROM inventory WHERE sku=?");
+        ps.setString(1, sku);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next() && rs.getInt("stock") &lt; qty) {
+            return "ERROR:STOCK:" + sku;
+        }
+    }
+    // calculate total with magic numbers
+    double total = 0;
+    for (Object item : items) {
+        Map m = (Map) item;
+        total += (double)m.get("price") * (int)m.get("qty") * 0.18;
+    }
+    // send email inline
+    Properties props = new Properties();
+    props.put("mail.smtp.host", "smtp.company.com");
+    // ... 40 more lines of SMTP setup
+    return "OK:" + total;
+}</code></pre>
+      </div>
+      <div class="ba-panel ba-after">
+        <div class="ba-label">✅ After — Clean, Single Responsibility</div>
+        <pre><code class="language-java">@Service
+@Transactional
+public class OrderService {
+
+    private final OrderValidator validator;
+    private final InventoryService inventory;
+    private final PricingEngine pricing;
+    private final NotificationService notifications;
+    private final OrderRepository orderRepo;
+
+    public OrderResult processOrder(CreateOrderRequest req) {
+        validator.validate(req);
+
+        List&lt;OrderItem&gt; items = req.items().stream()
+            .map(this::resolveItem)
+            .toList();
+
+        inventory.reserve(items);  // throws if unavailable
+
+        Money total = pricing.calculate(items);
+        Order order = orderRepo.save(Order.create(req, items, total));
+
+        notifications.sendConfirmation(order);
+        return OrderResult.success(order.getId(), total);
+    }
+
+    private OrderItem resolveItem(ItemRequest r) {
+        return inventory.findBySku(r.sku())
+            .toOrderItem(r.quantity());
+    }
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 2 ════════════════════════════ -->
+  <section class="chapter" id="ch2">
+    <div class="chapter-badge">🧠 Chapter 02</div>
+    <h1 class="chapter-title">Core Principles</h1>
+
+    <h2>Clean Code Principles</h2>
+    <p>Robert C. Martin's <em>Clean Code</em> distills decades of software craftsmanship into actionable heuristics. These aren't aesthetics — they directly impact defect rates and maintainability.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Principle</th><th>Core Idea</th><th>Common Violation</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Meaningful Names</strong></td><td>Names should reveal intent</td><td><code>int d; // elapsed time</code></td></tr>
+          <tr><td><strong>Small Functions</strong></td><td>Functions do ONE thing</td><td>200-line methods with multiple levels of abstraction</td></tr>
+          <tr><td><strong>No Side Effects</strong></td><td>Functions do what their name says, nothing more</td><td>A <code>getUser()</code> that also logs audit events</td></tr>
+          <tr><td><strong>Prefer Exceptions</strong></td><td>Don't return error codes</td><td>Returning <code>null</code> or <code>-1</code> on failure</td></tr>
+          <tr><td><strong>DRY Comments</strong></td><td>Comments explain WHY, not WHAT</td><td>Comments that repeat code in English</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>SOLID Principles</h2>
+
+    <h3>S — Single Responsibility Principle</h3>
+    <p>A class should have only <strong>one reason to change</strong>. If your <span class="inline-code">UserService</span> handles authentication, email sending, and PDF generation — it has three reasons to change. Each is a separate responsibility that should live in its own class.</p>
+
+    <h3>O — Open/Closed Principle</h3>
+    <p>Classes should be <strong>open for extension, closed for modification</strong>. Add new behavior by adding new code, not by changing existing code. Strategy and Template Method patterns are the canonical implementations.</p>
+
+    <h3>L — Liskov Substitution Principle</h3>
+    <p>Subtypes must be substitutable for their base types without altering the correctness of the program. If your <span class="inline-code">Square extends Rectangle</span> breaks when you call <span class="inline-code">setWidth()</span>, you're violating LSP.</p>
+
+    <h3>I — Interface Segregation Principle</h3>
+    <p>Clients should not be forced to depend on interfaces they don't use. A 20-method <span class="inline-code">UserRepository</span> interface is almost certainly wrong — split it into focused ports.</p>
+
+    <h3>D — Dependency Inversion Principle</h3>
+    <p>High-level modules should not depend on low-level modules. Both should depend on abstractions. This is the bedrock of testability — if your service instantiates its own database connection, you cannot unit test it.</p>
+
+    <div class="ba-grid">
+      <div class="ba-panel ba-before">
+        <div class="ba-label">❌ Violates DIP</div>
+        <pre><code class="language-java">public class ReportService {
+    // Hardwired dependency — untestable
+    private MySQLReportRepository repo =
+        new MySQLReportRepository();
+
+    public Report generate(Long id) {
+        return repo.findById(id);
+    }
+}</code></pre>
+      </div>
+      <div class="ba-panel ba-after">
+        <div class="ba-label">✅ DIP via Constructor Injection</div>
+        <pre><code class="language-java">public class ReportService {
+    // Depends on abstraction, not implementation
+    private final ReportRepository repo;
+
+    public ReportService(ReportRepository repo) {
+        this.repo = repo;
+    }
+
+    public Report generate(Long id) {
+        return repo.findById(id)
+            .orElseThrow(() -&gt; new ReportNotFoundException(id));
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <h2>DRY, KISS, YAGNI</h2>
+    <div class="smell-grid">
+      <div class="smell-card">
+        <div class="smell-icon">🔁</div>
+        <div class="smell-name">DRY — Don't Repeat Yourself</div>
+        <div class="smell-desc">Every piece of knowledge should have a single, authoritative representation in the system. Duplication is the root of most maintenance pain — when the business rule changes, you update it in one place or you don't.</div>
+        <span class="smell-severity sev-high">HIGH PRIORITY</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">💡</div>
+        <div class="smell-name">KISS — Keep It Simple, Stupid</div>
+        <div class="smell-desc">The simplest solution that works is almost always the right one. Resist the urge to build a generic, extensible framework when a straightforward class will do. Complexity is a liability, not an asset.</div>
+        <span class="smell-severity sev-med">MEDIUM PRIORITY</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">🚫</div>
+        <div class="smell-name">YAGNI — You Ain't Gonna Need It</div>
+        <div class="smell-desc">Don't build features or abstractions based on speculation about future requirements. Over-engineering is as harmful as under-engineering — you pay the complexity cost now, possibly forever, for value that never materializes.</div>
+        <span class="smell-severity sev-med">MEDIUM PRIORITY</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 3 ════════════════════════════ -->
+  <section class="chapter" id="ch3">
+    <div class="chapter-badge">🔍 Chapter 03</div>
+    <h1 class="chapter-title">Identifying Code Smells</h1>
+    <p>Code smells are surface indicators of deeper problems in the design. The term was coined by Kent Beck and popularized by Martin Fowler. Smells don't always mean a problem — they're signals that warrant investigation.</p>
+
+    <h2>The Smell Catalog</h2>
+    <div class="smell-grid">
+      <div class="smell-card">
+        <div class="smell-icon">📏</div>
+        <div class="smell-name">Long Method</div>
+        <div class="smell-desc">Methods longer than 20–30 lines are hard to understand, test, and reuse. If you need to scroll to read a method, it's doing too much. Extract into smaller, named methods.</div>
+        <span class="smell-severity sev-high">HIGH</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">🦄</div>
+        <div class="smell-name">God Class</div>
+        <div class="smell-desc">A class that knows too much or does too much. Often has 50+ methods, thousands of lines. Everything depends on it, making changes terrifying. The classic monolith in class form.</div>
+        <span class="smell-severity sev-high">HIGH</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">📋</div>
+        <div class="smell-name">Duplicate Code</div>
+        <div class="smell-desc">The same code structure appearing in more than one place. When the duplicated logic needs to change, you have to find every copy. Guaranteed to diverge over time.</div>
+        <span class="smell-severity sev-high">HIGH</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">🔗</div>
+        <div class="smell-name">Tight Coupling</div>
+        <div class="smell-desc">Classes that directly instantiate each other or share mutable state. Changes ripple unpredictably. Impossible to test in isolation. The enemy of modular design.</div>
+        <span class="smell-severity sev-high">HIGH</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">📦</div>
+        <div class="smell-name">Primitive Obsession</div>
+        <div class="smell-desc">Using primitives (String, int) where domain objects should exist. A userId is not just a Long — it's a concept with behavior. An email address is not just a String — it has validation rules.</div>
+        <span class="smell-severity sev-med">MEDIUM</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">⛓</div>
+        <div class="smell-name">Long Parameter List</div>
+        <div class="smell-desc">Methods with more than 3–4 parameters are hard to call correctly and understand. Replace with a Parameter Object or Builder. A method accepting 8 booleans is a design crime.</div>
+        <span class="smell-severity sev-med">MEDIUM</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">🔀</div>
+        <div class="smell-name">Divergent Change</div>
+        <div class="smell-desc">One class changed for many different reasons. If you find yourself saying "I changed X because of pricing AND because of tax AND because of discounts," the class has too many responsibilities.</div>
+        <span class="smell-severity sev-med">MEDIUM</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">🌊</div>
+        <div class="smell-name">Shotgun Surgery</div>
+        <div class="smell-desc">Opposite of divergent change — one change requires modifying many classes. If adding a new payment method requires touching 12 files, your design needs consolidation.</div>
+        <span class="smell-severity sev-high">HIGH</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">🤝</div>
+        <div class="smell-name">Feature Envy</div>
+        <div class="smell-desc">A method that seems more interested in data from another class than its own. A method in OrderService that accesses 8 fields of Customer directly is probably a method that should live in Customer.</div>
+        <span class="smell-severity sev-med">MEDIUM</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">🎭</div>
+        <div class="smell-name">Switch Statements</div>
+        <div class="smell-desc">Large switch or if-else chains on type codes usually indicate missing polymorphism. Every time a new type is added, every switch statement must be updated — a classic OCP violation.</div>
+        <span class="smell-severity sev-med">MEDIUM</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">🏚</div>
+        <div class="smell-name">Dead Code</div>
+        <div class="smell-desc">Unreachable code, unused variables, commented-out blocks. Increases cognitive load, causes confusion about intent, and may be hiding bugs. Delete it — version control is your undo button.</div>
+        <span class="smell-severity sev-low">LOW</span>
+      </div>
+      <div class="smell-card">
+        <div class="smell-icon">💬</div>
+        <div class="smell-name">Comments as Deodorant</div>
+        <div class="smell-desc">When you need a comment to explain WHAT code does (not WHY), the code is unclear. The comment is masking a naming or structural problem. Extract and rename instead of commenting.</div>
+        <span class="smell-severity sev-low">LOW</span>
+      </div>
+    </div>
+
+    <h2>Deep Dive: God Class in Production</h2>
+    <div class="callout danger">
+      <div class="callout-title">⚠ Real Scenario</div>
+      In a mid-size e-commerce platform, the <code>OrderManager</code> class grew to 4,200 lines over 6 years. It handled order creation, payment, refunds, inventory, shipping, notifications, loyalty points, and fraud detection. Every developer feared it. A team of 5 spent 3 months extracting it into 9 domain services.
+    </div>
+
+    <div class="ba-grid">
+      <div class="ba-panel ba-before">
+        <div class="ba-label">❌ God Class (abbreviated)</div>
+        <pre><code class="language-java">// 4000+ lines, handles everything
+public class OrderManager {
+    // Payment
+    public void chargeCard(Order o, Card c) { ... }
+    public void processRefund(Order o) { ... }
+    // Inventory
+    public void decrementStock(Order o) { ... }
+    public void releaseReservation(Order o) { ... }
+    // Shipping
+    public void schedulePickup(Order o) { ... }
+    public TrackingInfo getTracking(Long id) { ... }
+    // Notifications
+    public void sendConfirmationEmail(Order o) { ... }
+    public void sendSMS(Order o) { ... }
+    // Fraud
+    public FraudScore evaluateFraud(Order o) { ... }
+    // ... 50 more methods
+}</code></pre>
+      </div>
+      <div class="ba-panel ba-after">
+        <div class="ba-label">✅ Decomposed Domain Services</div>
+        <pre><code class="language-java">// Each class has ONE responsibility
+@Service class PaymentService {
+    Result charge(PaymentRequest req) { ... }
+    Result refund(RefundRequest req) { ... }
+}
+
+@Service class InventoryService {
+    void reserve(List&lt;OrderItem&gt; items) { ... }
+    void release(List&lt;OrderItem&gt; items) { ... }
+}
+
+@Service class ShippingService {
+    Shipment schedule(Order order) { ... }
+    TrackingInfo track(String trackingId) { ... }
+}
+
+@Service class FraudDetectionService {
+    FraudAssessment evaluate(OrderContext ctx) { ... }
+}
+
+// Orchestrator — thin, delegates only
+@Service class OrderOrchestrator {
+    private final PaymentService payment;
+    private final InventoryService inventory;
+    private final ShippingService shipping;
+    private final FraudDetectionService fraud;
+
+    public OrderResult submit(SubmitOrderCmd cmd) {
+        fraud.evaluate(cmd).assertSafe();
+        inventory.reserve(cmd.items());
+        PaymentResult pr = payment.charge(cmd.payment());
+        return OrderResult.from(pr);
+    }
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 4 ════════════════════════════ -->
+  <section class="chapter" id="ch4">
+    <div class="chapter-badge">🏗️ Chapter 04</div>
+    <h1 class="chapter-title">Refactoring Techniques (LLD Focus)</h1>
+
+    <div class="technique">
+      <div class="technique-header">
+        <div>
+          <div class="technique-title">Extract Method</div>
+          <p style="font-size:0.85rem;color:var(--text-dim);margin-top:6px;">Turn a code fragment into a method whose name explains the purpose of the fragment.</p>
+        </div>
+        <span class="technique-tag">FOWLER CATALOG #1</span>
+      </div>
+      <h4>Problem</h4>
+      <p>A method contains a block of code that can be grouped together. The block is complex enough that it needs a comment to explain it.</p>
+      <h4>Steps</h4>
+      <ol class="steps-list">
+        <li>Identify the fragment you want to extract</li>
+        <li>Create a new method named after what it does (verb-noun: <code>calculateDiscount</code>, <code>validateEmail</code>)</li>
+        <li>Copy the fragment into the new method</li>
+        <li>Scan for local variables — pass them as parameters or return them</li>
+        <li>Replace the original fragment with a call to the new method</li>
+        <li>Run tests — behavior must be identical</li>
+      </ol>
+      <div class="ba-grid" style="margin-top:16px;">
+        <div class="ba-panel ba-before">
+          <div class="ba-label">❌ Before</div>
+          <pre><code class="language-java">void printOrder(Order order) {
+    System.out.println("Order #" + order.getId());
+    System.out.println("Customer: " + order.getCustomer().getName());
+    // calculate total with tax
+    double subtotal = 0;
+    for (OrderItem i : order.getItems()) {
+        subtotal += i.getPrice() * i.getQuantity();
+    }
+    double tax = subtotal * 0.1;
+    double total = subtotal + tax;
+    System.out.println("Total: $" + total);
+}</code></pre>
+        </div>
+        <div class="ba-panel ba-after">
+          <div class="ba-label">✅ After</div>
+          <pre><code class="language-java">void printOrder(Order order) {
+    printHeader(order);
+    printTotal(order);
+}
+
+private void printHeader(Order order) {
+    System.out.println("Order #" + order.getId());
+    System.out.println("Customer: " + order.getCustomer().getName());
+}
+
+private void printTotal(Order order) {
+    Money total = calculateTotal(order);
+    System.out.println("Total: " + total);
+}
+
+private Money calculateTotal(Order order) {
+    Money subtotal = order.getItems().stream()
+        .map(i -> i.getPrice().multiply(i.getQuantity()))
+        .reduce(Money.ZERO, Money::add);
+    return subtotal.addTax(TAX_RATE);
+}</code></pre>
+        </div>
+      </div>
+      <div class="tradeoffs">
+        <div class="tradeoff-box pro"><h5>✓ Benefits</h5><ul><li>Self-documenting code</li><li>Enables reuse</li><li>Easier to test each piece</li><li>Reduces cognitive load</li></ul></div>
+        <div class="tradeoff-box con"><h5>✗ Costs</h5><ul><li>More methods to navigate</li><li>Slight overhead from function calls (usually negligible)</li></ul></div>
+      </div>
+    </div>
+
+    <div class="technique">
+      <div class="technique-header">
+        <div>
+          <div class="technique-title">Replace Conditional with Polymorphism</div>
+          <p style="font-size:0.85rem;color:var(--text-dim);margin-top:6px;">Move each branch of a conditional into an overriding method in a subclass or implementing class.</p>
+        </div>
+        <span class="technique-tag">OCP PATTERN</span>
+      </div>
+      <h4>Problem</h4>
+      <p>You have a conditional that chooses different behavior depending on the type of an object. Every new type means updating every conditional everywhere.</p>
+      <div class="ba-grid">
+        <div class="ba-panel ba-before">
+          <div class="ba-label">❌ Type-switch anti-pattern</div>
+          <pre><code class="language-java">double calculateShipping(Order order) {
+    switch (order.getShippingType()) {
+        case STANDARD:
+            return order.getWeight() * 2.5;
+        case EXPRESS:
+            return order.getWeight() * 5.0 + 10;
+        case OVERNIGHT:
+            return order.getWeight() * 8.0 + 25;
+        case INTERNATIONAL:
+            return order.getWeight() * 12.0 
+                + order.getDestinationZone() * 15;
+        default:
+            throw new IllegalStateException();
+    }
+}</code></pre>
+        </div>
+        <div class="ba-panel ba-after">
+          <div class="ba-label">✅ Strategy Pattern</div>
+          <pre><code class="language-java">public interface ShippingStrategy {
+    Money calculate(Order order);
+}
+
+@Component("STANDARD")
+public class StandardShipping implements ShippingStrategy {
+    public Money calculate(Order o) {
+        return o.getWeight().times(2.5);
+    }
+}
+
+@Component("EXPRESS")
+public class ExpressShipping implements ShippingStrategy {
+    public Money calculate(Order o) {
+        return o.getWeight().times(5.0).plus(Money.of(10));
+    }
+}
+
+// Adding DRONE delivery = add one class, zero changes
+@Component("DRONE")
+public class DroneShipping implements ShippingStrategy {
+    public Money calculate(Order o) { ... }
+}
+
+@Service
+public class ShippingCalculator {
+    private final Map&lt;String, ShippingStrategy&gt; strategies;
+
+    public Money calculate(Order order) {
+        return strategies
+            .getOrDefault(order.getShippingType(), 
+                          standardShipping)
+            .calculate(order);
+    }
+}</code></pre>
+        </div>
+      </div>
+      <div class="tradeoffs">
+        <div class="tradeoff-box pro"><h5>✓ Benefits</h5><ul><li>Open/Closed compliance</li><li>New types = zero existing changes</li><li>Each strategy independently testable</li></ul></div>
+        <div class="tradeoff-box con"><h5>✗ Costs</h5><ul><li>More classes</li><li>May be overkill for 2-3 cases</li></ul></div>
+      </div>
+    </div>
+
+    <div class="technique">
+      <div class="technique-header">
+        <div>
+          <div class="technique-title">Introduce Parameter Object</div>
+          <p style="font-size:0.85rem;color:var(--text-dim);margin-top:6px;">Replace a group of parameters that naturally go together with an object.</p>
+        </div>
+        <span class="technique-tag">DATA GROUPING</span>
+      </div>
+      <div class="ba-grid">
+        <div class="ba-panel ba-before">
+          <div class="ba-label">❌ Long Parameter List</div>
+          <pre><code class="language-java">List&lt;Transaction&gt; findTransactions(
+    Long accountId,
+    LocalDate startDate,
+    LocalDate endDate,
+    TransactionType type,
+    BigDecimal minAmount,
+    BigDecimal maxAmount,
+    int page,
+    int size
+) { ... }</code></pre>
+        </div>
+        <div class="ba-panel ba-after">
+          <div class="ba-label">✅ Parameter Object</div>
+          <pre><code class="language-java">// Immutable, self-validating parameter object
+public record TransactionSearchCriteria(
+    Long accountId,
+    DateRange dateRange,
+    TransactionType type,
+    AmountRange amountRange,
+    Pageable pageable
+) {
+    // Self-validates on construction
+    public TransactionSearchCriteria {
+        Objects.requireNonNull(accountId);
+        dateRange.validate();
+    }
+}
+
+// Clean call site
+List&lt;Transaction&gt; findTransactions(
+    TransactionSearchCriteria criteria
+) { ... }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="technique">
+      <div class="technique-header">
+        <div>
+          <div class="technique-title">Extract Class (God Class Decomposition)</div>
+          <p style="font-size:0.85rem;color:var(--text-dim);margin-top:6px;">When a class is doing the work of two classes, create a new class and move relevant fields and methods into it.</p>
+        </div>
+        <span class="technique-tag">SRP PATTERN</span>
+      </div>
+      <div class="ba-grid">
+        <div class="ba-panel ba-before">
+          <div class="ba-label">❌ Mixed Responsibilities</div>
+          <pre><code class="language-java">public class Employee {
+    private String name;
+    private String email;
+    // Payroll data mixed in
+    private BigDecimal baseSalary;
+    private int vacationDays;
+    private LocalDate lastPayDate;
+    private List&lt;Deduction&gt; deductions;
+
+    public BigDecimal calculateMonthlyPay() { ... }
+    public boolean isEligibleForBonus() { ... }
+    public void applyDeduction(Deduction d) { ... }
+    public String generatePayslip() { ... }
+}</code></pre>
+        </div>
+        <div class="ba-panel ba-after">
+          <div class="ba-label">✅ Separated Concerns</div>
+          <pre><code class="language-java">public class Employee {
+    private final EmployeeId id;
+    private String name;
+    private String email;
+    // Has-a relationship to payroll
+    private PayrollDetails payroll;
+}
+
+// Extracted — pure payroll domain
+public class PayrollDetails {
+    private BigDecimal baseSalary;
+    private int vacationDays;
+    private LocalDate lastPayDate;
+    private List&lt;Deduction&gt; deductions;
+
+    public BigDecimal calculateMonthlyPay() { ... }
+    public boolean isEligibleForBonus() { ... }
+    public void applyDeduction(Deduction d) { ... }
+    public Payslip generatePayslip() { ... }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h2>Design Patterns as Refactoring Targets</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Pattern</th><th>Replaces</th><th>Problem Solved</th><th>Spring Integration</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Strategy</strong></td><td>Switch/if-else chains on type</td><td>OCP violation, hard to extend</td><td><code>@Component</code> map injection</td></tr>
+          <tr><td><strong>Factory</strong></td><td><code>new</code> calls scattered in code</td><td>Coupling to concrete types</td><td><code>@Bean</code> methods, <code>ApplicationContext</code></td></tr>
+          <tr><td><strong>Builder</strong></td><td>Long constructors, telescoping</td><td>Unreadable object construction</td><td>Lombok <code>@Builder</code>, <code>record</code></td></tr>
+          <tr><td><strong>Decorator</strong></td><td>Inheritance for cross-cutting concerns</td><td>Rigid hierarchies</td><td>Spring AOP, filter chains</td></tr>
+          <tr><td><strong>Observer</strong></td><td>Direct method calls for events</td><td>Tight coupling of event producer/consumer</td><td>Spring <code>ApplicationEvent</code></td></tr>
+          <tr><td><strong>Template Method</strong></td><td>Duplicated algorithm skeletons</td><td>Code duplication with variation</td><td>Abstract base classes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 5 ════════════════════════════ -->
+  <section class="chapter" id="ch5">
+    <div class="chapter-badge">🏛️ Chapter 05</div>
+    <h1 class="chapter-title">Architectural Refactoring (HLD)</h1>
+
+    <h2>The Progression: Monolith → Microservices</h2>
+    <p>Architectural refactoring is the highest-stakes form of refactoring. Done wrong, it can fragment a working system into a distributed monolith — all the operational complexity of microservices with none of the independence. The journey must be <strong>incremental and intentional</strong>.</p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-title">Architecture Evolution Path</div>
+      <div class="mermaid">
+graph LR
+    A[📦 Big Ball of Mud\nMonolith] -->|"Step 1: Internal boundaries"| B[🏗 Modular Monolith\nPackage-by-domain]
+    B -->|"Step 2: Extract stable\nhigh-value seams"| C[🔀 Hybrid\nCore + 2-3 Services]
+    C -->|"Step 3: Continue\nextraction"| D[☁️ Microservices\nFull decomposition]
+    style A fill:#2d1515,color:#e05c5c,stroke:#e05c5c
+    style B fill:#1a2010,color:#3ecf8e,stroke:#3ecf8e
+    style C fill:#151d2d,color:#5b8dee,stroke:#5b8dee
+    style D fill:#1a1a2d,color:#f0a500,stroke:#f0a500
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-title">💡 Key Insight</div>
+      <strong>Start with a Modular Monolith.</strong> Netflix, Shopify, and Stack Overflow ran as monoliths for years. The modular monolith is the often-overlooked middle ground — it gives you domain isolation without distributed systems complexity. Only extract services when you have clear operational or scaling reasons.
+    </div>
+
+    <h2>Step 1: Modular Monolith</h2>
+    <p>Before splitting services, <strong>enforce boundaries within your codebase</strong>. In Java/Spring, this means package-by-domain, not package-by-layer.</p>
+
+    <div class="ba-grid">
+      <div class="ba-panel ba-before">
+        <div class="ba-label">❌ Package-by-Layer (everything knows everything)</div>
+        <pre><code class="language-java">com.example.app
+├── controller/
+│   ├── UserController.java
+│   ├── OrderController.java
+│   └── PaymentController.java
+├── service/
+│   ├── UserService.java   // depends on OrderService??
+│   ├── OrderService.java
+│   └── PaymentService.java
+├── repository/
+│   └── ...
+└── model/</code></pre>
+      </div>
+      <div class="ba-panel ba-after">
+        <div class="ba-label">✅ Package-by-Domain (module = contract)</div>
+        <pre><code class="language-java">com.example.app
+├── ordering/           // ORDER MODULE
+│   ├── api/            // Public contract
+│   │   └── OrderFacade.java
+│   ├── domain/
+│   │   └── Order.java
+│   ├── application/
+│   │   └── OrderService.java
+│   └── infrastructure/
+│       └── JpaOrderRepository.java
+├── payment/            // PAYMENT MODULE
+│   ├── api/
+│   │   └── PaymentFacade.java
+│   └── ...
+└── shared/             // Shared kernel (minimal)</code></pre>
+      </div>
+    </div>
+
+    <h2>Hexagonal Architecture (Ports & Adapters)</h2>
+    <p>The hexagonal architecture (Alistair Cockburn, 2005) isolates the application core from infrastructure concerns. Your domain logic has zero dependencies on Spring, JPA, or HTTP — it's pure Java. This makes it trivially testable and infrastructure-agnostic.</p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-title">Hexagonal Architecture — Dependency Flow</div>
+      <div class="mermaid">
+graph TB
+    subgraph "Driving Side (In)"
+        HTTP[HTTP / REST]
+        CLI[CLI]
+        Tests[Unit Tests]
+    end
+    subgraph "Application Core"
+        PI[Primary Ports\nUse Case Interfaces]
+        DOMAIN[Domain Logic\nEntities & Services]
+        SI[Secondary Ports\nRepository Interfaces]
+    end
+    subgraph "Driven Side (Out)"
+        JPA[JPA Adapter]
+        MQ[Kafka Adapter]
+        EXT[External API Adapter]
+    end
+    HTTP --> PI
+    CLI --> PI
+    Tests --> PI
+    PI --> DOMAIN
+    DOMAIN --> SI
+    SI --> JPA
+    SI --> MQ
+    SI --> EXT
+    style DOMAIN fill:#1a1a0d,color:#f0a500,stroke:#f0a500,stroke-width:2px
+      </div>
+    </div>
+
+    <h2>The Strangler Fig Pattern</h2>
+    <p>Named after the strangler fig tree that grows around a host tree and gradually replaces it, this pattern lets you incrementally replace a monolith without a big-bang rewrite.</p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-title">Strangler Fig — Traffic Migration</div>
+      <div class="mermaid">
+sequenceDiagram
+    participant Client
+    participant Facade as API Gateway / Facade
+    participant Legacy as Legacy Monolith
+    participant New as New Service
+
+    Note over Facade: Phase 1: Route all traffic to legacy
+    Client->>Facade: POST /orders
+    Facade->>Legacy: forward 100%
+
+    Note over Facade: Phase 2: New service ready, shadow mode
+    Client->>Facade: POST /orders
+    Facade->>New: forward 10% (canary)
+    Facade->>Legacy: forward 90%
+
+    Note over Facade: Phase 3: Gradually migrate
+    Client->>Facade: POST /orders
+    Facade->>New: forward 100%
+    Note over Legacy: Decommission after validation
+      </div>
+    </div>
+
+    <h2>Breaking Tight Coupling at Architecture Level</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Coupling Type</th><th>Problem</th><th>Solution Pattern</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Temporal coupling</strong></td><td>Service A calls B synchronously; if B is down, A fails</td><td>Async messaging (Kafka, RabbitMQ), Circuit Breaker</td></tr>
+          <tr><td><strong>Data coupling</strong></td><td>Multiple services share a database schema</td><td>Database-per-service, event sourcing for cross-service data</td></tr>
+          <tr><td><strong>Platform coupling</strong></td><td>Services share a library with tight versioning</td><td>Shared kernel (minimal), versioned APIs, DRY vs DRY balance</td></tr>
+          <tr><td><strong>Deployment coupling</strong></td><td>All services must deploy together</td><td>Independent deployability, contract testing (Pact)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 6 ════════════════════════════ -->
+  <section class="chapter" id="ch6">
+    <div class="chapter-badge">⚙️ Chapter 06</div>
+    <h1 class="chapter-title">Refactoring in Spring Boot</h1>
+
+    <h2>Service Layer Refactoring</h2>
+    <p>The service layer is the heart of a Spring Boot application. Common violations include services that reach directly into repositories of other domains, services that contain SQL logic, and services that return JPA entities directly to controllers.</p>
+
+    <div class="ba-grid">
+      <div class="ba-panel ba-before">
+        <div class="ba-label">❌ Anemic Service — all logic in controller</div>
+        <pre><code class="language-java">@RestController
+public class UserController {
+    @Autowired UserRepository repo;
+
+    @PostMapping("/users")
+    public User create(@RequestBody User user) {
+        // Validation logic in controller
+        if (user.getEmail() == null) throw new Exception();
+        // Business logic in controller
+        user.setCreatedAt(LocalDateTime.now());
+        user.setStatus("ACTIVE");
+        user.setPasswordHash(BCrypt.hash(user.getPassword()));
+        return repo.save(user); // returns JPA entity!
+    }
+}</code></pre>
+      </div>
+      <div class="ba-panel ba-after">
+        <div class="ba-label">✅ Proper Layering</div>
+        <pre><code class="language-java">@RestController
+@RequiredArgsConstructor
+public class UserController {
+    private final UserService userService;
+
+    @PostMapping("/users")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponse create(
+            @Valid @RequestBody CreateUserRequest req) {
+        return userService.createUser(req);
+    }
+}
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository repo;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper mapper;
+
+    @Transactional
+    public UserResponse createUser(CreateUserRequest req) {
+        if (repo.existsByEmail(req.email())) {
+            throw new DuplicateEmailException(req.email());
+        }
+        User user = User.create(req, passwordEncoder);
+        return mapper.toResponse(repo.save(user));
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <h2>DTO vs Entity Separation</h2>
+    <div class="callout danger">
+      <div class="callout-title">⚠ Critical Production Issue</div>
+      Returning JPA entities from REST endpoints is one of the most common and dangerous mistakes in Spring Boot. It can expose internal fields (passwords, audit metadata), cause infinite recursion with bidirectional relationships, trigger unintended lazy loading, and lock your API to your database schema.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>Proper DTO Layer with MapStruct</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">JAVA</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">// Request DTO — what comes IN
+public record CreateOrderRequest(
+    @NotNull Long customerId,
+    @NotEmpty @Valid List&lt;OrderItemRequest&gt; items,
+    @NotNull ShippingAddressRequest shippingAddress
+) {}
+
+// Response DTO — what goes OUT (no JPA annotations, no cycles)
+public record OrderResponse(
+    UUID orderId,
+    String status,
+    MoneyDto total,
+    List&lt;OrderItemResponse&gt; items,
+    Instant createdAt
+) {}
+
+// MapStruct mapper — compile-time, zero reflection overhead
+@Mapper(componentModel = "spring")
+public interface OrderMapper {
+    OrderResponse toResponse(Order order);
+    Order toEntity(CreateOrderRequest req);
+
+    @Mapping(target = "amount", source = "total.amount")
+    @Mapping(target = "currency", source = "total.currency")
+    MoneyDto toMoneyDto(Money money);
+}</code></pre>
+    </div>
+
+    <h2>Solving the N+1 Query Problem</h2>
+    <p>The N+1 problem is one of the most insidious performance bugs in JPA applications. You load N orders, then for each order JPA fires a separate query to load its items — N+1 total queries instead of 1.</p>
+
+    <div class="ba-grid">
+      <div class="ba-panel ba-before">
+        <div class="ba-label">❌ N+1 — Hibernate fires 101 queries for 100 orders</div>
+        <pre><code class="language-java">@Entity
+public class Order {
+    @OneToMany  // LAZY by default — good
+    private List&lt;OrderItem&gt; items;
+}
+
+// Service
+public List&lt;OrderSummary&gt; getRecentOrders() {
+    List&lt;Order&gt; orders = repo.findAll(); // query 1
+    return orders.stream().map(o -> {
+        // EACH access fires a new query!
+        int itemCount = o.getItems().size(); // query 2..N+1
+        return new OrderSummary(o.getId(), itemCount);
+    }).toList();
+}</code></pre>
+      </div>
+      <div class="ba-panel ba-after">
+        <div class="ba-label">✅ Fetch Join — single query</div>
+        <pre><code class="language-java">// Option 1: JPQL fetch join
+@Query("SELECT DISTINCT o FROM Order o " +
+       "LEFT JOIN FETCH o.items " +
+       "WHERE o.createdAt > :since")
+List&lt;Order&gt; findRecentWithItems(
+    @Param("since") Instant since);
+
+// Option 2: @EntityGraph (declarative)
+@EntityGraph(attributePaths = {"items", "items.product"})
+List&lt;Order&gt; findAllByCustomerId(Long customerId);
+
+// Option 3: Projection (best for read-only)
+@Query("SELECT o.id as id, COUNT(i) as itemCount " +
+       "FROM Order o LEFT JOIN o.items i " +
+       "GROUP BY o.id")
+List&lt;OrderSummaryProjection&gt; findOrderSummaries();</code></pre>
+      </div>
+    </div>
+
+    <h2>Exception Handling Refactoring</h2>
+    <div class="ba-grid">
+      <div class="ba-panel ba-before">
+        <div class="ba-label">❌ Try-catch everywhere</div>
+        <pre><code class="language-java">@PostMapping("/orders")
+public ResponseEntity create(@RequestBody Order o) {
+    try {
+        Order saved = service.create(o);
+        return ResponseEntity.ok(saved);
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body("Error");
+    }
+}</code></pre>
+      </div>
+      <div class="ba-panel ba-after">
+        <div class="ba-label">✅ Centralized handler</div>
+        <pre><code class="language-java">// Clean controller
+@PostMapping("/orders")
+@ResponseStatus(HttpStatus.CREATED)
+public OrderResponse create(
+        @Valid @RequestBody CreateOrderRequest req) {
+    return service.createOrder(req);
+}
+
+// All error handling in ONE place
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFound(
+            EntityNotFoundException ex) {
+        return ErrorResponse.of("NOT_FOUND", ex.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(
+            MethodArgumentNotValidException ex) {
+        List&lt;FieldError&gt; errors = ex.getBindingResult()
+            .getFieldErrors().stream()
+            .map(f -> new FieldError(f.getField(), 
+                                    f.getDefaultMessage()))
+            .toList();
+        return ErrorResponse.validation(errors);
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <h2>Configuration Refactoring</h2>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Type-safe Configuration with @ConfigurationProperties</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">JAVA</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">// BAD: Magic strings scattered throughout code
+@Value("${payment.gateway.url}") String url;
+@Value("${payment.gateway.timeout}") int timeout;
+@Value("${payment.gateway.api-key}") String apiKey;
+
+// GOOD: Type-safe, validated, documented config
+@ConfigurationProperties(prefix = "payment.gateway")
+@Validated
+public record PaymentGatewayProperties(
+    @NotBlank String url,
+    @Positive Duration timeout,
+    @NotBlank String apiKey,
+    @Min(1) @Max(10) int maxRetries
+) {}
+
+// Enable in main class
+@SpringBootApplication
+@ConfigurationPropertiesScan
+public class App { ... }
+
+// application.yml — structured and discoverable
+payment:
+  gateway:
+    url: https://api.payment.com
+    timeout: 5s
+    api-key: ${PAYMENT_API_KEY}
+    max-retries: 3</code></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 7 ════════════════════════════ -->
+  <section class="chapter" id="ch7">
+    <div class="chapter-badge">🧪 Chapter 07</div>
+    <h1 class="chapter-title">Testing During Refactoring</h1>
+
+    <p>Tests are the safety net that makes refactoring possible. Without them, you're changing code while flying blind. <strong>The golden rule: don't refactor without tests; don't write tests after refactoring.</strong></p>
+
+    <div class="callout success">
+      <div class="callout-title">✅ The Refactoring Loop</div>
+      <strong>Red → Green → Refactor.</strong> Write a failing test for the current behavior. Make it pass. Then refactor the implementation while keeping the test green. The test pins the observable behavior, freeing you to change internals freely.
+    </div>
+
+    <h2>Testing Strategy by Layer</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Layer</th><th>Test Type</th><th>Tool</th><th>What to Verify</th></tr></thead>
+        <tbody>
+          <tr><td>Domain / Service</td><td>Unit test</td><td>JUnit 5 + Mockito</td><td>Business logic, edge cases, error handling</td></tr>
+          <tr><td>Repository</td><td>Slice test</td><td><code>@DataJpaTest</code></td><td>Queries, mappings, constraints</td></tr>
+          <tr><td>Controller</td><td>Slice test</td><td><code>@WebMvcTest</code></td><td>HTTP status, request/response mapping, validation</td></tr>
+          <tr><td>Integration</td><td>Integration test</td><td><code>@SpringBootTest</code> + Testcontainers</td><td>Full flow, cross-cutting concerns</td></tr>
+          <tr><td>Contract</td><td>Consumer-driven</td><td>Pact</td><td>API contracts between microservices</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Refactoring Legacy Code with Tests</h2>
+    <p>When refactoring legacy code with no tests, use <strong>Characterization Tests</strong> (Michael Feathers, "Working Effectively with Legacy Code"). These tests capture the current behavior — right or wrong — so you know when you break something.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>Characterization Test → Safe Refactor Example</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">JAVA</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">// STEP 1: Write characterization test BEFORE refactoring
+// This pins existing behavior (even if behavior is questionable)
+@ExtendWith(MockitoExtension.class)
+class LegacyOrderProcessorCharacterizationTest {
+
+    @InjectMocks LegacyOrderProcessor processor;
+    @Mock PaymentGateway gateway;
+    @Mock EmailService emailService;
+
+    @Test
+    void givenValidOrder_whenProcess_thenCharged_andEmailSent() {
+        // Arrange — capture CURRENT behavior
+        Order order = TestFixtures.aValidOrder();
+        when(gateway.charge(any())).thenReturn(ChargeResult.success("ch_123"));
+
+        // Act
+        String result = processor.process(order);
+
+        // Assert — pin behavior exactly as it is today
+        assertThat(result).startsWith("OK:");
+        verify(emailService).sendConfirmation(eq(order.getCustomerEmail()), any());
+        verify(gateway).charge(argThat(r -> r.getAmount().equals(order.getTotal())));
+    }
+
+    @Test
+    void givenNullItems_whenProcess_thenReturnsErrorCode() {
+        Order order = TestFixtures.anOrderWithNullItems();
+        String result = processor.process(order);
+        // Current behavior returns error code (bad design, but we pin it)
+        assertThat(result).isEqualTo("ERROR:INVALID");
+    }
+}
+
+// STEP 2: Refactor — tests tell you if anything breaks
+// STEP 3: Update tests to reflect improved design (throw exception instead of error code)
+
+// AFTER REFACTORING — improved test
+@Test
+void givenNullItems_whenProcess_thenThrowsValidationException() {
+    Order order = TestFixtures.anOrderWithNullItems();
+    assertThatThrownBy(() -> orderService.processOrder(order))
+        .isInstanceOf(InvalidOrderException.class)
+        .hasMessageContaining("items cannot be null");
+}</code></pre>
+    </div>
+
+    <h2>JUnit 5 + Mockito Best Practices</h2>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Production-Grade Service Unit Test</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">JAVA</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">@ExtendWith(MockitoExtension.class)
+class OrderServiceTest {
+
+    @InjectMocks private OrderService orderService;
+    @Mock private OrderRepository orderRepo;
+    @Mock private InventoryService inventory;
+    @Mock private PaymentService payment;
+    @Mock private NotificationService notifications;
+
+    @Nested
+    class CreateOrder {
+        @Test
+        void givenValidRequest_whenCreate_thenOrderPersisted() {
+            // Given
+            CreateOrderRequest req = TestFixtures.aValidOrderRequest();
+            Order expectedOrder = TestFixtures.anOrder();
+            when(orderRepo.save(any(Order.class))).thenReturn(expectedOrder);
+
+            // When
+            OrderResponse result = orderService.createOrder(req);
+
+            // Then
+            assertThat(result.orderId()).isEqualTo(expectedOrder.getId());
+            verify(inventory).reserve(req.items());
+            verify(payment).authorize(any(PaymentRequest.class));
+            verify(notifications).sendConfirmation(expectedOrder);
+        }
+
+        @Test
+        void givenOutOfStockItem_whenCreate_thenThrowsInventoryException() {
+            CreateOrderRequest req = TestFixtures.aValidOrderRequest();
+            doThrow(new InsufficientStockException("SKU-001", 5, 3))
+                .when(inventory).reserve(req.items());
+
+            assertThatThrownBy(() -> orderService.createOrder(req))
+                .isInstanceOf(InsufficientStockException.class);
+
+            // Critical: payment must NOT be called if inventory fails
+            verifyNoInteractions(payment);
+            verifyNoInteractions(notifications);
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidOrderRequests")
+        void givenInvalidRequest_whenCreate_thenThrowsValidationException(
+                CreateOrderRequest invalidReq, String expectedMessage) {
+            assertThatThrownBy(() -> orderService.createOrder(invalidReq))
+                .isInstanceOf(ValidationException.class)
+                .hasMessageContaining(expectedMessage);
+        }
+
+        static Stream&lt;Arguments&gt; invalidOrderRequests() {
+            return Stream.of(
+                Arguments.of(TestFixtures.requestWithNullCustomer(), "customerId"),
+                Arguments.of(TestFixtures.requestWithEmptyItems(), "items"),
+                Arguments.of(TestFixtures.requestWithNegativeQuantity(), "quantity")
+            );
+        }
+    }
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 8 ════════════════════════════ -->
+  <section class="chapter" id="ch8">
+    <div class="chapter-badge">📈 Chapter 08</div>
+    <h1 class="chapter-title">Performance & Observability Refactoring</h1>
+
+    <h2>Identifying Bottlenecks Before You Optimize</h2>
+    <div class="callout">
+      <div class="callout-title">⚡ Rule of Thumb</div>
+      "Premature optimization is the root of all evil." — Knuth. <strong>Measure first, optimize second.</strong> Profile with real production traffic patterns before touching any code. A 10ms database query with 10 req/s is not a problem; the same query at 10,000 req/s is critical.
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>What it measures</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td>JProfiler / YourKit</td><td>CPU, heap, thread analysis</td><td>Diagnosing memory leaks, hot methods</td></tr>
+          <tr><td>Async Profiler</td><td>CPU flames, lock contention</td><td>Native-level performance analysis</td></tr>
+          <tr><td>Spring Boot Actuator</td><td>JVM metrics, HTTP stats</td><td>Runtime health monitoring</td></tr>
+          <tr><td>Micrometer + Prometheus</td><td>Custom business metrics</td><td>Dashboards, alerting</td></tr>
+          <tr><td>p6spy / datasource-proxy</td><td>SQL queries</td><td>Detecting N+1, slow queries</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Structured Logging Refactoring</h2>
+    <div class="ba-grid">
+      <div class="ba-panel ba-before">
+        <div class="ba-label">❌ Unstructured, unactionable logs</div>
+        <pre><code class="language-java">// Impossible to query, filter, or correlate
+logger.info("Processing order " + orderId + " for user " + userId);
+logger.error("Error! " + e.getMessage());
+logger.debug("Done");</code></pre>
+      </div>
+      <div class="ba-panel ba-after">
+        <div class="ba-label">✅ Structured logging (JSON via Logback)</div>
+        <pre><code class="language-java">// Queryable in Elasticsearch, Datadog, Splunk
+log.info("order.processing.started",
+    kv("orderId", orderId),
+    kv("customerId", customerId),
+    kv("itemCount", items.size()),
+    kv("totalAmount", total.getAmount()));
+
+// Contextual error with stack trace
+log.error("order.processing.failed",
+    kv("orderId", orderId),
+    kv("errorCode", e.getErrorCode()),
+    kv("stage", "payment"),
+    e);
+
+// MDC for request correlation (add in filter)
+MDC.put("traceId", request.getHeader("X-Trace-Id"));
+MDC.put("userId", SecurityContext.getUserId());</code></pre>
+      </div>
+    </div>
+
+    <h2>Custom Metrics with Micrometer</h2>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Business Metrics — Orders & Revenue</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">JAVA</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">@Service
+@RequiredArgsConstructor
+public class MetricAwareOrderService {
+
+    private final MeterRegistry registry;
+    private final OrderService orderService;
+
+    // Counters for business KPIs
+    private Counter ordersCreated;
+    private Counter ordersFailedPayment;
+    private DistributionSummary orderRevenue;
+    private Timer orderProcessingTime;
+
+    @PostConstruct
+    void initMetrics() {
+        ordersCreated = Counter.builder("orders.created")
+            .description("Total orders successfully created")
+            .tag("service", "order")
+            .register(registry);
+
+        ordersFailedPayment = Counter.builder("orders.failed")
+            .tag("reason", "payment")
+            .register(registry);
+
+        orderRevenue = DistributionSummary.builder("orders.revenue")
+            .description("Order revenue in cents")
+            .baseUnit("cents")
+            .publishPercentiles(0.5, 0.95, 0.99)
+            .register(registry);
+
+        orderProcessingTime = Timer.builder("orders.processing.duration")
+            .description("End-to-end order processing time")
+            .publishPercentileHistogram()
+            .register(registry);
+    }
+
+    public OrderResponse createOrder(CreateOrderRequest req) {
+        return orderProcessingTime.record(() -> {
+            try {
+                OrderResponse response = orderService.createOrder(req);
+                ordersCreated.increment();
+                orderRevenue.record(response.total().amountInCents());
+                return response;
+            } catch (PaymentException e) {
+                ordersFailedPayment.increment();
+                throw e;
+            }
+        });
+    }
+}</code></pre>
+    </div>
+
+    <h2>Distributed Tracing</h2>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Spring Boot 3 + Micrometer Tracing (Brave/OTEL)</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">JAVA</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">// application.yml
+management:
+  tracing:
+    sampling:
+      probability: 1.0  # 100% in dev, 10% in prod
+
+// Custom span for critical operations
+@Service
+@RequiredArgsConstructor
+public class PaymentService {
+    private final Tracer tracer;
+
+    public PaymentResult charge(PaymentRequest req) {
+        // Create child span for detailed tracing
+        Span span = tracer.nextSpan()
+            .name("payment.gateway.charge")
+            .tag("gateway", "stripe")
+            .tag("currency", req.getCurrency())
+            .start();
+
+        try (Tracer.SpanInScope ws = tracer.withSpan(span)) {
+            PaymentResult result = gateway.charge(req);
+            span.tag("transactionId", result.getTransactionId());
+            return result;
+        } catch (PaymentGatewayException e) {
+            span.tag("error", "true")
+                .tag("error.type", e.getErrorCode());
+            throw e;
+        } finally {
+            span.end();
+        }
+    }
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 9 ════════════════════════════ -->
+  <section class="chapter" id="ch9">
+    <div class="chapter-badge">🚨 Chapter 09</div>
+    <h1 class="chapter-title">Production Refactoring Strategy</h1>
+
+    <h2>The Cardinal Rules</h2>
+    <div class="callout danger">
+      <div class="callout-title">⚠ Production Safety</div>
+      Never refactor without: (1) a rollback plan, (2) tests covering the changed behavior, (3) monitoring in place to detect regressions, and (4) coordination with the team. Refactoring in production without observability is like surgery in the dark.
+    </div>
+
+    <h2>Incremental Refactoring — The Boy Scout Rule</h2>
+    <p>Leave every piece of code you touch <em>cleaner than you found it</em>. Don't schedule a "refactoring sprint" — weave refactoring into every feature. This prevents the big bang approach that derails projects.</p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-title">Incremental vs Big-Bang Refactoring Risk</div>
+      <div class="mermaid">
+gantt
+    title Refactoring Approach Comparison
+    dateFormat  YYYY-MM-DD
+    section Incremental
+    Feature A + refactor     :2024-01-01, 14d
+    Feature B + refactor     :2024-01-15, 14d
+    Feature C + refactor     :2024-02-01, 14d
+    Cumulative improvement   :2024-02-15, 30d
+    section Big-Bang
+    Freeze features          :crit, 2024-01-01, 30d
+    Refactoring sprint       :crit, 2024-01-31, 45d
+    Re-integration hell      :crit, 2024-03-15, 30d
+      </div>
+    </div>
+
+    <h2>Feature Flags for Safe Migration</h2>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Feature Flag — Dark Launch New Service</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">JAVA</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">@Service
+@RequiredArgsConstructor
+public class OrderProcessingRouter {
+
+    private final FeatureFlagService flags;
+    private final LegacyOrderProcessor legacy;
+    private final NewOrderService newService;
+    private final MeterRegistry registry;
+
+    public OrderResult processOrder(OrderRequest request) {
+        boolean useNewService = flags.isEnabled(
+            "new-order-service",
+            request.getCustomerId()  // Percentage rollout by user
+        );
+
+        if (useNewService) {
+            try {
+                OrderResult result = newService.process(request);
+                registry.counter("order.routing", "service", "new").increment();
+                return result;
+            } catch (Exception e) {
+                // Automatic fallback on new service failure
+                log.error("New order service failed, falling back", e);
+                registry.counter("order.routing.fallback").increment();
+                return legacy.process(request);
+            }
+        }
+
+        registry.counter("order.routing", "service", "legacy").increment();
+        return legacy.process(request);
+    }
+}
+
+// Feature flag config (LaunchDarkly / Unleash / custom)
+// flags.yml
+features:
+  new-order-service:
+    enabled: true
+    rollout:
+      percentage: 10  # Start at 10%, monitor, increase</code></pre>
+    </div>
+
+    <h2>Risk Mitigation Strategies</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Risk</th><th>Probability</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Behavioral regression</td><td>High</td><td>Characterization tests before refactoring; automated regression suite</td></tr>
+          <tr><td>Performance regression</td><td>Medium</td><td>Baseline benchmarks with JMeter/Gatling; monitor p95 latency post-deploy</td></tr>
+          <tr><td>Data corruption</td><td>Low</td><td>Database migration rollback scripts; dual-write during migration; snapshot before</td></tr>
+          <tr><td>Integration breakage</td><td>Medium</td><td>Consumer-driven contract tests (Pact); API versioning; backwards compatibility period</td></tr>
+          <tr><td>Team confusion</td><td>Medium</td><td>ADR (Architecture Decision Records); team review of refactoring plan; pair programming</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Architecture Decision Records (ADR)</h2>
+    <div class="code-block">
+      <div class="code-header">
+        <span>ADR Template — Document Every Significant Refactoring Decision</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">MARKDOWN</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">// docs/adr/0012-extract-payment-service.md
+
+# ADR 0012: Extract Payment Service from Order Monolith
+
+## Status
+Accepted — 2024-03-15
+
+## Context
+OrderService has grown to 3,000 lines. Payment logic accounts for 800 lines
+and is the most frequently changed domain (17 PRs in last 6 months).
+Payment has different scaling requirements (PCI DSS compliance, charge-backs).
+
+## Decision
+Extract payment into a separate bounded context (PaymentService).
+Phase 1: Internal module within same deployment (2 weeks).
+Phase 2: Separate deployable service (4 weeks after Phase 1 is stable).
+
+## Consequences
+Positive:
+- Independent deployability of payment logic
+- Clear PCI DSS boundary
+- Separate scaling
+
+Negative:
+- Distributed transaction complexity (Saga pattern required)
+- Two more services to operate and monitor
+- Network latency on payment calls (~2ms acceptable)
+
+## Rollback
+If Phase 2 causes issues, collapse back to Phase 1 (internal module)
+using feature flag: `payment.service.external=false`</code></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHAPTER 10 ════════════════════════════ -->
+  <section class="chapter" id="ch10">
+    <div class="chapter-badge">🧰 Chapter 10</div>
+    <h1 class="chapter-title">Tools & Automation</h1>
+
+    <h2>Static Analysis Tools</h2>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-cat">Code Quality</div>
+        <div class="tool-name">SonarQube</div>
+        <div class="tool-desc">Continuous inspection of code quality. Detects bugs, vulnerabilities, code smells, and technical debt. Integrates with all major CI/CD pipelines. The industry standard for quality gates.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Bug Detection</div>
+        <div class="tool-name">SpotBugs</div>
+        <div class="tool-desc">Static analysis for JVM. Finds hundreds of bug patterns including null pointer issues, resource leaks, thread safety violations, and incorrect use of Java APIs.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Style / Consistency</div>
+        <div class="tool-name">Checkstyle</div>
+        <div class="tool-desc">Enforces coding standards and style rules. Ensures consistent formatting, naming, Javadoc presence. Integrates with Maven/Gradle build to fail on violations.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Code Duplication</div>
+        <div class="tool-name">PMD / CPD</div>
+        <div class="tool-desc">PMD finds common programming flaws. CPD (Copy-Paste Detector) is its sister tool that finds duplicate code across the entire codebase — essential for DRY enforcement.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Architecture</div>
+        <div class="tool-name">ArchUnit</div>
+        <div class="tool-desc">Write executable architecture tests in Java. Enforce layering rules, naming conventions, dependency constraints. If the architecture rule is violated, the build fails.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Security</div>
+        <div class="tool-name">OWASP Dependency-Check</div>
+        <div class="tool-desc">Scans project dependencies for known CVEs. Integrates with CI/CD. Essential for supply chain security — the Log4Shell vulnerability would have been caught by this.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Coverage</div>
+        <div class="tool-name">JaCoCo</div>
+        <div class="tool-desc">Tracks test coverage at line, branch, and method level. Integrates with SonarQube. Set quality gate thresholds to prevent coverage regression during refactoring.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">IDE</div>
+        <div class="tool-name">IntelliJ IDEA</div>
+        <div class="tool-desc">The gold standard Java IDE. Built-in refactoring operations (Rename, Extract Method, Move Class) are safe and automatic. Structural search and replace is invaluable.</div>
+      </div>
+    </div>
+
+    <h2>ArchUnit — Architecture as Code</h2>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Enforce Architecture Rules with Tests</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="code-lang-badge">JAVA</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+      </div>
+      <pre><code class="language-java">@AnalyzeClasses(packages = "com.example.app")
+public class ArchitectureTests {
+
+    // Controllers must not access repositories directly
+    @ArchTest
+    static final ArchRule controllers_should_not_use_repositories =
+        noClasses().that().resideInAPackage("..controller..")
+            .should().accessClassesThat()
+            .resideInAPackage("..repository..")
+            .because("Controllers must go through the service layer");
+
+    // Domain must not depend on infrastructure
+    @ArchTest
+    static final ArchRule domain_must_not_depend_on_infrastructure =
+        noClasses().that().resideInAPackage("..domain..")
+            .should().dependOnClassesThat()
+            .resideInAnyPackage("..infrastructure..", "..jpa..")
+            .because("Domain must be infrastructure-independent (Hexagonal)");
+
+    // Service layer must not have circular dependencies
+    @ArchTest
+    static final ArchRule no_cycles =
+        slices().matching("com.example.app.(*)..")
+            .should().beFreeOfCycles();
+
+    // All public service methods must be transactional
+    @ArchTest
+    static final ArchRule services_should_be_transactional =
+        classes().that().resideInAPackage("..service..")
+            .and().areAnnotatedWith(Service.class)
+            .should().haveOnlyMethodsThat(
+                are(annotatedWith(Transactional.class))
+                    .or(are(not(PUBLIC)))
+            );</code></pre>
+    </div>
+
+    <h2>Quality Gate Pipeline</h2>
+    <div class="diagram-wrap">
+      <div class="diagram-title">CI/CD Quality Gates</div>
+      <div class="mermaid">
+graph LR
+    PR[Pull Request] --> Compile[Compile\n& Lint]
+    Compile --> UnitTests[Unit Tests\nJUnit 5]
+    UnitTests --> Coverage[Coverage Check\nJaCoCo ≥ 80%]
+    Coverage --> StaticAnalysis[Static Analysis\nSpotBugs + PMD]
+    StaticAnalysis --> ArchTests[Architecture Tests\nArchUnit]
+    ArchTests --> SonarGate[SonarQube\nQuality Gate]
+    SonarGate --> IntTests[Integration Tests\nTestcontainers]
+    IntTests --> MERGE[✅ Merge Allowed]
+    
+    Compile -->|fail| BLOCK[🚫 Blocked]
+    UnitTests -->|fail| BLOCK
+    Coverage -->|&lt;80%| BLOCK
+    SonarGate -->|violations| BLOCK
+    style MERGE fill:#0d2010,color:#3ecf8e,stroke:#3ecf8e
+    style BLOCK fill:#2d0d0d,color:#e05c5c,stroke:#e05c5c
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CHECKLIST ════════════════════════════ -->
+  <section class="chapter" id="checklist">
+    <div class="chapter-badge">✓ Reference</div>
+    <h1 class="chapter-title">Refactoring Checklist</h1>
+    <p>Use this checklist before, during, and after every refactoring session. Check items off as you complete them.</p>
+
+    <h2>Before You Start</h2>
+    <div class="checklist">
+      <label class="check-item"><input type="checkbox"> <span>Tests exist that cover the code being refactored</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Tests are passing (green) before any changes</span></label>
+      <label class="check-item"><input type="checkbox"> <span>You understand the current behavior (read it, don't assume)</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Rollback strategy is identified</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Team is aware of the refactoring scope</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Feature flags are in place if touching production paths</span></label>
+    </div>
+
+    <h2>Code-Level Checklist</h2>
+    <div class="checklist">
+      <label class="check-item"><input type="checkbox"> <span>Methods are ≤ 30 lines and do ONE thing</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Classes have a single reason to change (SRP)</span></label>
+      <label class="check-item"><input type="checkbox"> <span>No magic numbers — all constants are named</span></label>
+      <label class="check-item"><input type="checkbox"> <span>No null returns — use Optional or throw exceptions</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Parameter lists are ≤ 3-4 (use objects otherwise)</span></label>
+      <label class="check-item"><input type="checkbox"> <span>No duplicate code blocks (DRY)</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Dependencies are injected, not instantiated (DIP)</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Conditionals on type are replaced with polymorphism</span></label>
+      <label class="check-item"><input type="checkbox"> <span>All variables and methods have intention-revealing names</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Dead code removed (version control is your safety net)</span></label>
+    </div>
+
+    <h2>Spring Boot Specific</h2>
+    <div class="checklist">
+      <label class="check-item"><input type="checkbox"> <span>Controllers return DTOs, not JPA entities</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Service methods are @Transactional where needed</span></label>
+      <label class="check-item"><input type="checkbox"> <span>No @Autowired field injection (use constructor injection)</span></label>
+      <label class="check-item"><input type="checkbox"> <span>N+1 queries eliminated (verify with datasource-proxy)</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Configuration uses @ConfigurationProperties, not @Value</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Exception handling is centralized in @RestControllerAdvice</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Secrets in environment variables, not application.yml</span></label>
+    </div>
+
+    <h2>After Refactoring</h2>
+    <div class="checklist">
+      <label class="check-item"><input type="checkbox"> <span>All tests still pass</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Code coverage did not decrease</span></label>
+      <label class="check-item"><input type="checkbox"> <span>SonarQube quality gate passes</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Performance benchmarks are within acceptable range</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Change documented in commit message / ADR if architectural</span></label>
+      <label class="check-item"><input type="checkbox"> <span>Code reviewed by at least one other engineer</span></label>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ CASE STUDY ════════════════════════════ -->
+  <section class="chapter" id="casestudy">
+    <div class="chapter-badge">★ Case Study</div>
+    <h1 class="chapter-title">Real-World Case Study</h1>
+
+    <div class="case-study">
+      <div class="cs-company">FinTech Platform · 2023 · 18-month refactoring journey</div>
+      <div class="cs-title">From Monolith Meltdown to Modular Architecture</div>
+      <p>A Series B fintech company (payments processing, ~$2B TPV) was running a 6-year-old Spring MVC monolith with 180,000 lines of code. Deployment took 45 minutes. Any change to the payment module required regression testing the entire codebase. Incidents averaged 3 per week. Two senior engineers left citing codebase quality.</p>
+
+      <h3>The Problem</h3>
+      <ul>
+        <li>Single <span class="inline-code">PaymentProcessor</span> class: 8,200 lines, 140 methods</li>
+        <li>3 different database schemas shared across all domains via direct SQL</li>
+        <li>No domain boundaries — payment code directly calling user and fraud code</li>
+        <li>Test coverage: 12% (characterization tests: 0)</li>
+        <li>Average incident MTTR: 4.2 hours</li>
+      </ul>
+
+      <h3>The 4-Phase Approach</h3>
+      <ol>
+        <li><strong>Phase 1 (Months 1-3):</strong> Characterization tests. Wrote 340 tests to pin existing behavior. Coverage went from 12% → 41%. Zero feature work. Management was nervous.</li>
+        <li><strong>Phase 2 (Months 4-8):</strong> Internal modularization. Extracted 9 internal modules (Payment, Fraud, User, Ledger, etc.) with strict package boundaries. Enforced with ArchUnit. No external service splits.</li>
+        <li><strong>Phase 3 (Months 9-14):</strong> Strangler Fig for 3 highest-value services (Fraud Detection, Notification, Reporting). Used feature flags and shadow mode for 6 weeks before full cutover.</li>
+        <li><strong>Phase 4 (Months 15-18):</strong> Core Payment extraction. Most complex due to data ownership. Implemented Saga pattern for distributed transactions. Database split using dual-write with reconciliation.</li>
+      </ol>
+
+      <div class="cs-grid">
+        <div class="cs-stat"><span class="cs-stat-val">73%</span><div class="cs-stat-lbl">Reduction in incident rate (3/week → 0.8/week)</div></div>
+        <div class="cs-stat"><span class="cs-stat-val">12x</span><div class="cs-stat-lbl">Faster deployment (45min → 3.5min)</div></div>
+        <div class="cs-stat"><span class="cs-stat-val">84%</span><div class="cs-stat-lbl">Test coverage (up from 12%)</div></div>
+        <div class="cs-stat"><span class="cs-stat-val">4.2h→22m</span><div class="cs-stat-lbl">Mean Time to Recovery reduction</div></div>
+        <div class="cs-stat"><span class="cs-stat-val">3x</span><div class="cs-stat-lbl">Feature velocity (story points/sprint)</div></div>
+        <div class="cs-stat"><span class="cs-stat-val">0</span><div class="cs-stat-lbl">Production incidents caused by the refactoring itself</div></div>
+      </div>
+
+      <div class="callout success" style="margin-top:24px;">
+        <div class="callout-title">✅ Key Lesson</div>
+        The team resisted pressure to "just rewrite it." The modular monolith phase (Phase 2) delivered more business value than the service extractions — and would have been sufficient for their scale. Microservices came later, when independent deployability was genuinely needed, not as an aspirational goal.
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ INTERVIEW QS ════════════════════════ -->
+  <section class="chapter" id="interview">
+    <div class="chapter-badge">? Interview</div>
+    <h1 class="chapter-title">Interview Questions</h1>
+    <p>These questions are commonly asked for Senior → Staff-level engineering roles. Click to expand model answers.</p>
+
+    <h2>Fundamentals</h2>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        What is the difference between refactoring and rewriting? When would you choose each?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        Refactoring is incremental, behavior-preserving structural improvement with tests as a safety net. Rewriting discards the existing code and builds from scratch. Choose refactoring when the code is working but poorly structured (90% of cases). Choose rewriting only when: (1) the fundamental technology choice is wrong, (2) the domain model is so incorrect that incremental improvement would take longer than a rewrite, or (3) compliance/legal forces a greenfield. Rewrites routinely fail or cost 3-5x the estimate — they tend to lose accumulated edge-case handling. The Strangler Fig pattern bridges the gap: rewrite incrementally while keeping the system running.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        How would you refactor a 5,000-line God class in a production system?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        First, don't touch it without tests. Step 1: Write characterization tests — 100-200 tests that pin the current behavior. Step 2: Identify responsibility clusters — group methods that operate on the same data or represent the same concern. Step 3: Use Extract Class to create candidate classes internally. Step 4: Introduce a thin facade (the original class name) that delegates to the new classes — this preserves the public API. Step 5: Verify all characterization tests still pass. Step 6: Gradually migrate callers to the new classes directly. Step 7: When the original class is empty delegation, delete it. Ship this over 4-8 weeks, not a single PR.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        Explain the Strangler Fig pattern. When is it appropriate?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        The Strangler Fig pattern (Martin Fowler) routes new functionality to a new system while the legacy system handles existing behavior. You place an API gateway or facade in front of both systems and gradually move routes from legacy to new. It's appropriate when: migrating from monolith to microservices, replacing a legacy language/framework, or extracting a bounded context. The pattern requires a routing layer (can be API gateway, Nginx, or application-level router), feature flags to control traffic, shadow mode to validate the new system with production data before routing live traffic, and monitoring to detect behavioral divergence.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        How do you handle the N+1 query problem in Spring Data JPA?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        The N+1 problem occurs when fetching N entities triggers N additional queries for associations. Detection: enable p6spy or datasource-proxy logging; Hibernate's statistics mode. Solutions in order of preference: (1) JPQL fetch join for specific query needs — `SELECT o FROM Order o JOIN FETCH o.items WHERE...`, (2) @EntityGraph for declarative fetching without JPQL, (3) Projections (interface or record) for read-only use cases — pull only needed columns in one query, (4) Batch fetching via `@BatchSize` on collections — Hibernate batches N queries into ceil(N/size) queries. Avoid eager fetching globally — it's a shotgun solution that over-fetches. The right answer depends on the use case: reporting queries → projections, operational queries → fetch joins.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        You're asked to migrate a monolith to microservices. What's your approach?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        I'd push back on the framing first — "microservices" is rarely the right starting point. My approach: (1) Modular Monolith First: enforce package-by-domain boundaries, forbid cross-domain repository access, identify bounded contexts. This alone solves 60% of problems. (2) Identify extraction candidates: services with independent scaling needs, different release cycles, or clear ownership boundaries. Don't extract just to extract. (3) Use the Strangler Fig: route at the API gateway, shadow test the new service, incrementally move traffic with feature flags. (4) Data: the hardest part. Database-per-service requires saga patterns for transactions. Consider dual-write with reconciliation during transition. (5) Operational readiness: distributed tracing, centralized logging, service mesh before extracting services. Microservices without observability are an operational nightmare.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        How do you measure the success of a refactoring effort?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        Engineering metrics: test coverage (before/after), cyclomatic complexity (SonarQube), code duplication percentage, build time, deployment frequency. Operational metrics: incident rate (MTTF), MTTR, change failure rate. Business/team metrics: feature velocity (story points per sprint), time to onboard a new engineer, developer satisfaction (team surveys). The most convincing metric for leadership is usually feature velocity — "we shipped 3x as many features in Q3 after the refactoring as in Q2." Track all metrics before, during, and after to tell a complete story.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        What is the Hexagonal Architecture and why is it useful for refactoring?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        Hexagonal Architecture (Ports and Adapters, Alistair Cockburn 2005) separates the application core from all infrastructure. The core (domain logic) depends only on abstractions (ports) — interfaces like OrderRepository, PaymentGateway. Adapters implement these ports: JpaOrderRepository, StripePaymentGateway. The core has zero imports from Spring, JPA, or HTTP. Benefits for refactoring: (1) Domain logic is testable with pure unit tests — no Spring context, no database, (2) You can swap infrastructure (MySQL → Postgres, REST → messaging) without touching domain logic, (3) Makes bounded context boundaries explicit and testable with ArchUnit rules. In Spring Boot, this means the domain package imports nothing from org.springframework, and Spring beans live only in the infrastructure/adapter layer.
+      </div>
+    </div>
+
+    <h2>Behavioral / Leadership</h2>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        How do you convince stakeholders to allocate time for refactoring?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        Frame it as risk and cost, not code quality. Show: (1) Incident cost — "Our last 3 incidents took an average of 4 hours to resolve and cost $X in customer SLA credits. The root cause was in the OrderManager class every time." (2) Velocity data — "Features that touch the payment module take 3x longer than features in newer, cleaner code." (3) Engineer retention — "Two engineers explicitly cited codebase quality in exit interviews." Don't ask for a "refactoring sprint" — ask to embed refactoring into feature work (20% rule). Show quick wins early. Track and report metrics every sprint. Never frame it as "cleaning up" — always connect it to a business outcome.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(this)">
+        Describe a time you led a significant refactoring. What was the outcome?
+        <span class="qa-icon">+</span>
+      </div>
+      <div class="qa-answer">
+        (Model structure — adapt to your experience) Context: Describe the system, its age, the pain. What was breaking, how often, what was the cost. Decision: Why you chose refactoring over rewriting. What the approach was (strangler fig, modular extraction, etc.). Execution: How you built the safety net (tests). How you communicated progress to the team and stakeholders. One specific technical challenge and how you solved it. Outcome: Quantify everything. Incident rate, deployment time, coverage, velocity. What you'd do differently. The interviewer is assessing: systems thinking, communication, risk awareness, outcome orientation.
+      </div>
+    </div>
+  </section>
+
+  </content-wrap>
+</div>
+
+<script>
+// ─── HIGHLIGHT.JS ───────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  hljs.highlightAll();
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default',
+    themeVariables: {
+      primaryColor: '#1a1e25',
+      primaryTextColor: '#d4d8e1',
+      primaryBorderColor: '#252a33',
+      lineColor: '#7a8190',
+      secondaryColor: '#13161b',
+      tertiaryColor: '#0d0f12'
+    }
+  });
+});
+
+// ─── THEME TOGGLE ───────────────────────────────
+const themeToggle = document.getElementById('theme-toggle');
+themeToggle.checked = document.documentElement.getAttribute('data-theme') === 'light';
+themeToggle.addEventListener('change', (e) => {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', e.target.checked ? 'light' : 'dark');
+});
+
+// ─── MOBILE MENU ────────────────────────────────
+const menuBtn = document.getElementById('menu-toggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+menuBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+});
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+});
+
+// ─── READING PROGRESS ───────────────────────────
+const progressBar = document.getElementById('reading-progress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.body.scrollHeight - window.innerHeight;
+  const pct = Math.min((scrollTop / docHeight) * 100, 100);
+  progressBar.style.width = pct + '%';
+});
+
+// ─── ACTIVE NAV ─────────────────────────────────
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -75% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// ─── COPY TO CLIPBOARD ──────────────────────────
+function copyCode(btn) {
+  const block = btn.closest('.code-block');
+  const code = block.querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ─── Q&A ACCORDION ──────────────────────────────
+function toggleQA(btn) {
+  const item = btn.closest('.qa-item');
+  item.classList.toggle('open');
+}
+
+// ─── SEARCH ─────────────────────────────────────
+const searchInput = document.getElementById('search-input');
+const allNavLinks = document.querySelectorAll('.nav-link');
+searchInput.addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  allNavLinks.forEach(link => {
+    const text = link.textContent.toLowerCase();
+    link.style.display = !q || text.includes(q) ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.nav-group-title').forEach(title => {
+    const group = title.nextElementSibling;
+    const visibleLinks = group ? [...group.querySelectorAll ? [] : []]: [];
+    // Keep group headers visible
+    title.style.display = '';
+  });
+});
+
+// ─── COPY BUTTONS for BA panels ─────────────────
+document.querySelectorAll('.ba-panel pre').forEach(pre => {
+  const wrap = pre.parentElement;
+  const copyEl = document.createElement('button');
+  copyEl.className = 'copy-btn';
+  copyEl.textContent = 'copy';
+  copyEl.style.cssText = 'position:absolute;top:36px;right:8px;z-index:2;';
+  wrap.style.position = 'relative';
+  copyEl.addEventListener('click', () => {
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      copyEl.textContent = 'copied!';
+      setTimeout(() => copyEl.textContent = 'copy', 2000);
+    });
+  });
+  wrap.appendChild(copyEl);
+});
+</script>
+</body>
+</html>
