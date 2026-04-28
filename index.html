@@ -368,7 +368,16 @@ strong { color: var(--text-bright); font-weight: 500; }
   gap: 20px;
   margin: 24px 0;
 }
-.ba-panel { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+/* min-width: 0 fixes the classic CSS Grid overflow bug where grid
+   children expand beyond their column, distorting the layout */
+.ba-panel {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  min-width: 0;        /* ← critical grid fix */
+  display: flex;
+  flex-direction: column;
+}
 .ba-label {
   padding: 8px 16px;
   font-family: 'IBM Plex Mono', monospace;
@@ -376,11 +385,20 @@ strong { color: var(--text-bright); font-weight: 500; }
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-weight: 600;
+  flex-shrink: 0;
 }
 .ba-before .ba-label { background: rgba(224,92,92,0.12); color: var(--danger); border-bottom: 1px solid rgba(224,92,92,0.2); }
 .ba-after .ba-label { background: rgba(62,207,142,0.1); color: var(--accent2); border-bottom: 1px solid rgba(62,207,142,0.2); }
-.ba-panel pre { margin: 0; padding: 16px; background: var(--code-bg) !important; font-size: 0.78rem; line-height: 1.6; overflow-x: auto; }
-.ba-panel code { font-family: 'IBM Plex Mono', monospace; }
+.ba-panel pre {
+  margin: 0;
+  padding: 16px;
+  background: var(--code-bg) !important;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  overflow-x: auto;   /* scroll long lines — not clipped by parent */
+  flex: 1;
+}
+.ba-panel code { font-family: 'IBM Plex Mono', monospace; white-space: pre; }
 
 /* ─── SMELL CARDS ──────────────────────────── */
 .smell-grid {
@@ -1216,65 +1234,172 @@ public class OrderManager {
       <div class="technique-header">
         <div>
           <div class="technique-title">Extract Method</div>
-          <p style="font-size:0.85rem;color:var(--text-dim);margin-top:6px;">Turn a code fragment into a method whose name explains the purpose of the fragment.</p>
+          <p style="font-size:0.85rem;color:var(--text-dim);margin-top:6px;">Turn a code fragment into a method whose name explains the purpose of the fragment — the most-used refactoring in practice.</p>
         </div>
         <span class="technique-tag">FOWLER CATALOG #1</span>
       </div>
+
       <h4>Problem</h4>
-      <p>A method contains a block of code that can be grouped together. The block is complex enough that it needs a comment to explain it.</p>
-      <h4>Steps</h4>
+      <p>A method is long and contains blocks that each do a distinct thing. Those blocks often carry <em>comments</em> that explain what they do — a clear signal the block deserves its own named method.</p>
+
+      <div class="callout info" style="margin:16px 0;">
+        <div class="callout-title">💡 The Rule of Thumb</div>
+        If you feel the urge to write a comment inside a method body, extract that block into a method whose <strong>name</strong> replaces the comment. A good method name is better documentation than any comment.
+      </div>
+
+      <h4>Mechanics (Step-by-Step)</h4>
       <ol class="steps-list">
-        <li>Identify the fragment you want to extract</li>
-        <li>Create a new method named after what it does (verb-noun: <code>calculateDiscount</code>, <code>validateEmail</code>)</li>
-        <li>Copy the fragment into the new method</li>
-        <li>Scan for local variables — pass them as parameters or return them</li>
+        <li>Identify the fragment — look for comment headers or logical phases inside the method</li>
+        <li>Check for <strong>local variables</strong> used by the fragment — they become parameters</li>
+        <li>Check if the fragment <strong>modifies</strong> a local variable — if so, that variable becomes the return value</li>
+        <li>Create a new method; name it after what it <em>does</em> (<span class="inline-code">calculateDiscount</span>, <span class="inline-code">validateEmailFormat</span>)</li>
+        <li>Copy the fragment, adjust variable references, add return if needed</li>
         <li>Replace the original fragment with a call to the new method</li>
-        <li>Run tests — behavior must be identical</li>
+        <li><strong>Run tests.</strong> Observable behavior must be byte-for-byte identical</li>
       </ol>
-      <div class="ba-grid" style="margin-top:16px;">
+
+      <h4>Before / After — Order Printing</h4>
+      <div class="ba-grid" style="margin-top:12px;">
         <div class="ba-panel ba-before">
-          <div class="ba-label">❌ Before</div>
+          <div class="ba-label">❌ Before — One Long Method</div>
           <pre><code class="language-java">void printOrder(Order order) {
-    System.out.println("Order #" + order.getId());
-    System.out.println("Customer: " + order.getCustomer().getName());
-    // calculate total with tax
-    double subtotal = 0;
-    for (OrderItem i : order.getItems()) {
-        subtotal += i.getPrice() * i.getQuantity();
-    }
-    double tax = subtotal * 0.1;
-    double total = subtotal + tax;
-    System.out.println("Total: $" + total);
+  // print header
+  System.out.println(
+    "Order #" + order.getId());
+  System.out.println(
+    "Customer: "
+    + order.getCustomer().getName());
+
+  // calculate total with tax
+  double subtotal = 0;
+  for (OrderItem i : order.getItems()) {
+    subtotal +=
+      i.getPrice() * i.getQuantity();
+  }
+  double tax = subtotal * 0.1;
+  double total = subtotal + tax;
+  System.out.println(
+    "Total: $" + total);
 }</code></pre>
         </div>
         <div class="ba-panel ba-after">
-          <div class="ba-label">✅ After</div>
+          <div class="ba-label">✅ After — Extract Method Applied</div>
           <pre><code class="language-java">void printOrder(Order order) {
-    printHeader(order);
-    printTotal(order);
+  printHeader(order);
+  printTotal(order);
 }
 
-private void printHeader(Order order) {
-    System.out.println("Order #" + order.getId());
-    System.out.println("Customer: " + order.getCustomer().getName());
+private void printHeader(Order o) {
+  System.out.println(
+    "Order #" + o.getId());
+  System.out.println(
+    "Customer: "
+    + o.getCustomer().getName());
 }
 
-private void printTotal(Order order) {
-    Money total = calculateTotal(order);
-    System.out.println("Total: " + total);
+private void printTotal(Order o) {
+  Money total = calculateTotal(o);
+  System.out.println("Total: " + total);
 }
 
-private Money calculateTotal(Order order) {
-    Money subtotal = order.getItems().stream()
-        .map(i -> i.getPrice().multiply(i.getQuantity()))
-        .reduce(Money.ZERO, Money::add);
-    return subtotal.addTax(TAX_RATE);
+private Money calculateTotal(Order o) {
+  return o.getItems().stream()
+    .map(i -> i.getPrice()
+               .multiply(i.getQuantity()))
+    .reduce(Money.ZERO, Money::add)
+    .addTax(TAX_RATE);
 }</code></pre>
         </div>
       </div>
+
+      <h4>Before / After — Validation Block</h4>
+      <div class="ba-grid" style="margin-top:12px;">
+        <div class="ba-panel ba-before">
+          <div class="ba-label">❌ Before — Inline Validation</div>
+          <pre><code class="language-java">public void register(String email,
+                     String password) {
+  // validate email
+  if (email == null
+      || !email.contains("@")
+      || email.length() > 255) {
+    throw new ValidationException(
+      "Invalid email");
+  }
+  // validate password
+  if (password == null
+      || password.length() < 8
+      || !password.matches(
+           ".*[A-Z].*")) {
+    throw new ValidationException(
+      "Weak password");
+  }
+  userRepo.save(new User(email, password));
+}</code></pre>
+        </div>
+        <div class="ba-panel ba-after">
+          <div class="ba-label">✅ After — Named Validation Methods</div>
+          <pre><code class="language-java">public void register(String email,
+                     String password) {
+  validateEmail(email);
+  validatePassword(password);
+  userRepo.save(
+    new User(email, password));
+}
+
+private void validateEmail(String e) {
+  if (e == null
+      || !e.contains("@")
+      || e.length() > 255) {
+    throw new ValidationException(
+      "Invalid email");
+  }
+}
+
+private void validatePassword(String p) {
+  if (p == null
+      || p.length() < 8
+      || !p.matches(".*[A-Z].*")) {
+    throw new ValidationException(
+      "Weak password");
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <h4>When to Extract vs. When NOT to</h4>
+      <div class="table-wrap" style="margin:16px 0;">
+        <table>
+          <thead><tr><th>Signal</th><th>Extract?</th><th>Rationale</th></tr></thead>
+          <tbody>
+            <tr><td>Block has a comment header</td><td><span style="color:var(--accent2)">✓ Yes</span></td><td>The comment is already a method name — make it official</td></tr>
+            <tr><td>Block is used in &gt;1 place</td><td><span style="color:var(--accent2)">✓ Yes</span></td><td>DRY — eliminate duplication immediately</td></tr>
+            <tr><td>Block mixes abstraction levels</td><td><span style="color:var(--accent2)">✓ Yes</span></td><td>High-level method should read like prose, not implementation</td></tr>
+            <tr><td>Block is 2–3 lines, used once, trivially obvious</td><td><span style="color:var(--danger)">✗ No</span></td><td>Extraction adds navigation cost without clarity gain</td></tr>
+            <tr><td>Would need 5+ parameters to extract</td><td><span style="color:var(--warn)">⚠ Rethink</span></td><td>Too many deps → Extract Class may be the right move instead</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <div class="tradeoffs">
-        <div class="tradeoff-box pro"><h5>✓ Benefits</h5><ul><li>Self-documenting code</li><li>Enables reuse</li><li>Easier to test each piece</li><li>Reduces cognitive load</li></ul></div>
-        <div class="tradeoff-box con"><h5>✗ Costs</h5><ul><li>More methods to navigate</li><li>Slight overhead from function calls (usually negligible)</li></ul></div>
+        <div class="tradeoff-box pro">
+          <h5>✓ Benefits</h5>
+          <ul>
+            <li>Self-documenting — names replace comments</li>
+            <li>Enables reuse without duplication</li>
+            <li>Each extracted method is independently unit-testable</li>
+            <li>Reduces cognitive load per method</li>
+            <li>Reveals hidden abstraction levels</li>
+          </ul>
+        </div>
+        <div class="tradeoff-box con">
+          <h5>✗ Watch-outs</h5>
+          <ul>
+            <li>More methods to navigate in IDE</li>
+            <li>Over-extraction fragments natural logic flow</li>
+            <li>JVM inlines tiny methods — no real perf cost</li>
+            <li>Poor naming makes extracted methods confusing</li>
+          </ul>
+        </div>
       </div>
     </div>
 
